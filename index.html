@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 flex justify-center p-6">
+    <div class="container bg-purple p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
+        <h1 class="text-2xl font-bold text-center mb-4">Resume Builder</h1>
+        <div class="resume-form space-y-3">
+            <input type="text" id="name" placeholder="Full Name" class="w-full p-2 border border-gray-300 rounded"
+                oninput="updatePreview('name')">
+            <input type="text" id="email" placeholder="Email" class="w-full p-2 border border-gray-300 rounded"
+                oninput="updatePreview('email')">
+            <input type="text" id="phone" placeholder="Phone Number" class="w-full p-2 border border-gray-300 rounded"
+                oninput="updatePreview('phone')">
+            <input type="file" id="photo" accept="image/*" class="w-full p-2 border border-gray-300 rounded"
+                onchange="previewPhoto(event)">
+            <textarea id="summary" placeholder="Professional Summary" class="w-full p-2 border border-gray-300 rounded"
+                oninput="updatePreview('summary')"></textarea>
+            <input type="text" id="skills" placeholder="Enter skills separated by commas"
+                class="w-full p-2 border border-gray-300 rounded" oninput="updatePreviewSkills()">
+            <div id="education-section">
+                <div class="education-entry space-y-2">
+                    <input type="text" placeholder="Institute Name" class="w-full p-2 border border-gray-300 rounded"
+                        oninput="updateEducationPreview()">
+                    <input type="text" placeholder="Year of Passing" class="w-full p-2 border border-gray-300 rounded"
+                        oninput="updateEducationPreview()">
+                    <input type="text" placeholder="CGPA / Percentage" class="w-full p-2 border border-gray-300 rounded"
+                        oninput="updateEducationPreview()">
+                </div>
+            </div>
+            <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" onclick="addEducation()">Add
+                More Education</button>
+            <input type="text" id="internships" placeholder="Internships"
+                class="w-full p-2 border border-gray-300 rounded" oninput="updatePreview('internships')">
+            <button class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
+                onclick="generateResume()">Generate Resume</button>
+        </div>
+
+        <div id="resume-preview" class="resume-template mt-6 p-4 bg-gray-50 border border-gray-300 rounded relative">
+            <img id="preview-photo" src="" alt="Candidate Photo"
+                class="absolute top-4 right-4 w-20 h-20 rounded-full hidden">
+            <h2 id="preview-name" class="text-xl font-semibold">Your Name</h2>
+            <p id="preview-email" class="text-gray-700">Email: example@mail.com</p>
+            <p id="preview-phone" class="text-gray-700">Phone: 123-456-7890</p>
+            <p id="preview-summary" class="text-gray-700">Professional Summary will appear here...</p>
+            <p id="preview-skills" class="text-gray-700">Skills: </p>
+            <p id="preview-education" class="text-gray-700">Education:</p>
+            <ul id="education-list" class="list-disc pl-5 text-gray-700"></ul>
+            <p id="preview-internships" class="text-gray-700">Internships: </p>
+            <button class="w-full bg-blue-500 text-white p-2 rounded mt-3 hover:bg-blue-600"
+                onclick="downloadResume()">Download as PDF</button>
+        </div>
+    </div>
+    <script>
+        function updatePreview(field) {
+            let inputValue = document.getElementById(field).value;
+            document.getElementById("preview-" + field).innerText = field.charAt(0).toUpperCase() + field.slice(1) + ": " + inputValue;
+        }
+
+        function updatePreviewSkills() {
+            let skillsValue = document.getElementById("skills").value;
+            document.getElementById("preview-skills").innerText = "Skills: " + skillsValue;
+        }
+
+        function previewPhoto(event) {
+            let file = event.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let imgElement = document.getElementById("preview-photo");
+                    imgElement.src = e.target.result;
+                    imgElement.classList.remove("hidden");
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addEducation() {
+            let educationSection = document.getElementById("education-section");
+            let newEntry = document.createElement("div");
+            newEntry.className = "education-entry space-y-2 mt-2";
+            newEntry.innerHTML = `
+                <input type="text" placeholder="Institute Name" class="w-full p-2 border border-gray-300 rounded" oninput="updateEducationPreview()">
+                <input type="text" placeholder="Year of Passing" class="w-full p-2 border border-gray-300 rounded" oninput="updateEducationPreview()">
+                <input type="text" placeholder="CGPA / Percentage" class="w-full p-2 border border-gray-300 rounded" oninput="updateEducationPreview()">
+            `;
+            educationSection.appendChild(newEntry);
+        }
+
+        function updateEducationPreview() {
+            let educationEntries = document.querySelectorAll(".education-entry");
+            let educationList = document.getElementById("education-list");
+            educationList.innerHTML = "";
+            educationEntries.forEach(entry => {
+                let institute = entry.children[0].value;
+                let year = entry.children[1].value;
+                let cgpa = entry.children[2].value;
+                if (institute || year || cgpa) {
+                    let listItem = document.createElement("li");
+                    listItem.innerText = `${institute} - Year: ${year}, CGPA/Percentage: ${cgpa}`;
+                    educationList.appendChild(listItem);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
